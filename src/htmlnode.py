@@ -8,7 +8,16 @@ class HTMLNode():
         self.props = props
 
     def to_html(self):
-        NotImplementedError()
+        string = f"<{self.tag}>"
+        if self.children:
+            for child in self.children:
+                string += child.to_html()
+            return string + f"</{self.tag}>"
+        elif not self.children and self.value and self.tag:
+            return f"<{self.tag}>{self.value}</{self.tag}>"
+        else:
+            return self.value
+        
 
     def props_to_html(self):
         string = ""
@@ -17,7 +26,7 @@ class HTMLNode():
         return string
 
     def __repr__(self):
-        print(f"tag is {self.tag}, value is {self.value}, children are {self.childern} & props are {self.props}")
+        return f"tag is {self.tag}, value is {self.value}, children are {self.children} & props are {self.props}"
 
 
 class LeafNode(HTMLNode):
@@ -26,7 +35,7 @@ class LeafNode(HTMLNode):
 
     def to_html(self):
         if not self.value:
-            raise ValueError("Lead nodes must have a value")
+            raise ValueError("Leaf nodes must have a value")
         elif not self.tag:
             return self.value
         else:
@@ -71,6 +80,3 @@ def text_node_to_html_node(text_node):
         return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
     else:
         raise Exception("Invalid text type")
-
-        
-
