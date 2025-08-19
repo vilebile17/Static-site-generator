@@ -37,15 +37,15 @@ def split_nodes_link(old_nodes):
             extracted_stuff = extract_markdown_links(node.text)
             for link in extracted_stuff:
                 clicky_text, url = link[0], link[1]
-                sections = active_text.split(f"![{clicky_text}]({url})", 1)
+                sections = active_text.split(f"[{clicky_text}]({url})", 1)
 
                 if sections[0]:
                     new_nodes.append(TextNode(sections[0],TextType.TEXT))
-                new_nodes.append(TextNode(clicky_text, TextType.IMAGE, url))
+                new_nodes.append(TextNode(clicky_text, TextType.LINK, url))
                 
                 if len(sections) == 2:
                     active_text = sections[1]
-                else: active_text = None
+                else: active_text = "" 
             if active_text:
                 new_nodes.append(TextNode(active_text, TextType.TEXT))
 

@@ -7,15 +7,14 @@ def text_to_textnodes(text):
     new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
     new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
     new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
-    new_nodes = split_nodes_link(new_nodes)
     new_nodes = split_nodes_image(new_nodes)
+    new_nodes = split_nodes_link(new_nodes)
     return new_nodes
 
 def markdown_to_blocks(markdown):
+    new_list = []
     lst = markdown.split("\n\n")
     for i in range(len(lst)):
-        if not lst[i]:
-            lst.remove(lst[i])
-        else:
-            lst[i] = lst[i].strip()
-    return lst
+        if lst[i]:
+            new_list.append(lst[i].strip())
+    return new_list

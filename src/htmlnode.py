@@ -34,7 +34,14 @@ class LeafNode(HTMLNode):
         super().__init__(tag=tag, value=value, props=props, children=None)
 
     def to_html(self):
-        if not self.value:
+        #print(f"Hello guys, I am a HTML node with a value of {self.value} and a tag of {self.tag} and of course with {self.props} attributes")
+        if self.tag in ["img", "br", "hr"]:
+            attributes_str = ""
+            for attribute in self.props:
+                attributes_str += f'{attribute}="{self.props[attribute]}" '
+            return f"<{self.tag} {attributes_str} />"
+
+        elif not self.value:
             raise ValueError("Leaf nodes must have a value")
         elif not self.tag:
             return self.value

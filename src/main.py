@@ -1,4 +1,6 @@
 import os, shutil
+from markdown_to_html_node import markdown_to_html_node
+from extract_markdown_links import extract_title
 
 def get_file_list(first_run=True, current_dir="./static"):
     # these two if statements are to make sure that the public directory is empty
@@ -26,19 +28,43 @@ def copy_to_public(file_list):
         if not "/" in path_to_static:
             shutil.copy(file, "./public")
         else:
-            directories = path_to_static.split("/")
-            print(directories)
-            current_path = "./public"
-            for i in range(len(directories) - 1):
-                print(f"{current_path}/{directories[i]}")
-                os.mkdir(f"{current_path}/{directories[i]}")
-                current_path = f"{current_path}/{directories[i]}"
-            shutil.copy(file, current_path)
+            directories_only = os.path.dirname(file.replace("static", "public"))
+            os.makedirs(directories_only, exist_ok=True)
+            shutil.copy(file, file.replace("static", "public"))
 
 
 
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
-     
+    with open(from_path, "r") as f:
+        markdown_content = f.read()
+    with open(template_path, "r") as g:
+        template_content = g.read()
+
+    html_node = markdown_to_html_node(markdown_content)
+    print("Successfully made a html node")
+    html_content = html_node.to_html()
+    print("Successfully converted the html node into a string object")
+    
+    title = extract_title(markdown_content)
+    print("Successfully extracted the title, it should be ", title)
+
+    html_page = template_content.replace("{{ Title }}", title)
+    html_page = html_page.replace("{{ Content }}", html_content)
+    print("Filled in the html template")
+
+    directories_only = os.path.dirname(dest_path)
+    os.makedirs(directories_only, exist_ok=True)
+    with open(dest_path, "w") as f:
+        print(html_page, file=f)
+    print("Successfully wrote the file!\n")
+
+    
+
+    
+
 
 files = get_file_list()
 copy_to_public(files)
+generate_page("content/index.md", "template.html", "public/index.html")

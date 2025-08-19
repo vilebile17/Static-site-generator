@@ -42,12 +42,11 @@ def markdown_to_html_node(markdown):
             lines = block.split("\n")
             new_lines = []
             for line in lines:
-                new_lines.append(line[1:])
-            for line in new_lines:
-                if not text_to_children(line):
-                    new_nodes.append(LeafNode("p", line))
-                else:
-                    new_nodes.append(ParentNode("p", text_to_children(line)))
+                if line[1:].strip() != "":
+                    new_lines.append(line[1:].strip())
+            rejoined_string = "\n".join(new_lines)
+            new_nodes = text_to_children(rejoined_string)
+            
 
         elif its_type == BlockType.CODE:
             text_node = TextNode(extract_code(block), TextType.CODE) # a code block should just be one massive block
@@ -97,25 +96,3 @@ def extract_code(block):
     code = block.split("```\n", 1)[1]
     return code.split("```", 1)[0]
 
-
-
-md = """
-# Hi there!
-
-This is some _italic_ text
-
-- an item with **bold text**
-- an item with `inline code`
-
-> A very **wise** quote
-> A second _wise_ quote
-
-1. first **bold** item
-2. second _italic_ item
-3. third `code` item
-
-```
-print("hello world")
-print("boo")
-```
-"""
