@@ -60,6 +60,22 @@ def generate_page(from_path, template_path, dest_path):
         print(html_page, file=f)
     print("Successfully wrote the file!\n")
 
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    if os.path.isdir(dir_path_content):
+        for file in os.listdir(dir_path_content):
+            print(f"I'm going to go searching in {os.path.join(dest_dir_path, file)}")
+            generate_pages_recursive(os.path.join(dir_path_content, file), template_path, os.path.join(dest_dir_path, file))
+    
+    elif os.path.isfile(dir_path_content):
+        if dir_path_content.endswith(".md"):
+            relative_path = os.path.relpath(dest_dir_path, "content").replace(".md", ".html")
+            dest_path = os.path.join("public", relative_path)
+            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+            generate_page(dir_path_content, template_path, dest_path) 
+    else:
+        raise ValueError(f"Somehow, the selected object : {dir_path_content} isn't a directory nor a file")
+
     
 
     
@@ -67,4 +83,4 @@ def generate_page(from_path, template_path, dest_path):
 
 files = get_file_list()
 copy_to_public(files)
-generate_page("content/index.md", "template.html", "public/index.html")
+generate_pages_recursive("content", "template.html", "public")
