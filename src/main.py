@@ -1,4 +1,4 @@
-import os, shutil
+import os, shutil, sys
 from markdown_to_html_node import markdown_to_html_node
 from extract_markdown_links import extract_title
 
@@ -35,7 +35,7 @@ def copy_to_public(file_list):
 
 
 def generate_page(from_path, template_path, dest_path, basepath):
-    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    print("base path is : ", basepath)
 
     with open(from_path, "r") as f:
         markdown_content = f.read()
@@ -43,30 +43,24 @@ def generate_page(from_path, template_path, dest_path, basepath):
         template_content = g.read()
 
     html_node = markdown_to_html_node(markdown_content)
-    print("Successfully made a html node")
     html_content = html_node.to_html()
-    print("Successfully converted the html node into a string object")
     
     title = extract_title(markdown_content)
-    print("Successfully extracted the title, it should be ", title)
 
     html_page = template_content.replace("{{ Title }}", title)
     html_page = html_page.replace("{{ Content }}", html_content)
     html_page = html_page.replace('href="/', f'href="{basepath}')
     html_page = html_page.replace('src="/', f'src="{basepath}')
-    print("Filled in the html template")
 
     directories_only = os.path.dirname(dest_path)
     os.makedirs(directories_only, exist_ok=True)
     with open(dest_path, "w") as f:
         print(html_page, file=f)
-    print("Successfully wrote the file!\n")
 
 
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     if os.path.isdir(dir_path_content):
         for file in os.listdir(dir_path_content):
-            print(f"I'm going to go searching in {os.path.join(dest_dir_path, file)}")
             generate_pages_recursive(os.path.join(dir_path_content, file), template_path, os.path.join(dest_dir_path, file), basepath)
     
     elif os.path.isfile(dir_path_content):
